@@ -32,12 +32,12 @@ USAGE: python LDAPie.py <opts> <get/post> <url>
 class LDAPie:
 
 #Initialize the program
-    def __init__(self,wordlist,url):
-        self.wordlist = wordlist
+    def __init__(self,filename,url):
+        self.filename = filename
         self.url = url
 
 #Function to take the file from sys args, read them, then we'll use that to build our request
-    def post(self,wordlist,url):
+    def post(self,filename,url):
 
         with open(wordlist, 'r') as f:
             a = f.read().splitlines()
@@ -51,7 +51,7 @@ class LDAPie:
                     print("\033[1;32mVALID LDAP INJECTION: "+str(data))
             pass
 
-    def get(self,wordlist,url):
+    def get(self):
         with open(wordlist, 'r') as f:
             a = f.read().splitlines()
             for x in a:
