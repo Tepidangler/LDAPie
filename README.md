@@ -2,8 +2,7 @@
 
 # Requirements:
 
-- Python2.7 <b>(NOT TESTED ON 3)</b>
-- requests
+- Python 2.7 or 3.6
 
 # Installing
 
@@ -23,13 +22,17 @@ You can test `ldapie` with:
 
 # Notes
 
-Since it's still being worked out and since I don't really know python all that well there are some bugs<br>
-feel free to let me know so I can fix them, also feel free to let me know how it's working for you<br>
+Since it's still being worked out and since I don't really know python all that well there
+are some bugs.
+
+Feel free to let me know so I can fix them, also feel free to let me know how it's working for you.
 
 # Usage
 python ldapie -w <wordlist> -g/p <get/post> -u <url>
 
 Example:
 
-python ldapie -w gd.txt -m "get" -u http://gd.com/path/to/form<br>
-python ldapie -w gd.txt -m "post" -u http://gd.com/path/to/form
+```
+    python ldapie -w gd.txt -m "get" -u http://gd.com/path/to/form
+    python ldapie -w gd.txt -m "post" -u http://gd.com/path/to/form
+```
