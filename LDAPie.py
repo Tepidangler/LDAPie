@@ -32,9 +32,8 @@ USAGE: python LDAPie.py <opts> <get/post> <url>
 class LDAPie:
 
 #Initialize the program
-    def __init__(self,filename,url):
+    def __init__(self,filename):
         self.filename = filename
-        self.url = url
 
 #Function to take the file from sys args, read them, then we'll use that to build our request
     def post(self,filename,url):
@@ -88,7 +87,7 @@ for arg in sys.argv:
         get = True
     arg_index = arg_index + 1
 
-m = LDAPie(wordlist,url)
+m = LDAPie(wordlist)
 if post == True:
     p = m.post(wordlist,url)
     pass
