@@ -97,16 +97,14 @@ if get == True:
     pass
 
 elif get == False or post == False:
-    print("""\033;1;32m
-
+    print("""
 -w                      path/to/wordlist 
 -u                      path/to/vuln/service 
 -p                      post/-g get 
 -h                      help
 """)
 elif wordlist == None or url == None:
-    print("""\033;1;32m
-
+    print("""
 -w                      path/to/wordlist 
 -u                      path/to/vuln/service 
 -p                      post/-g get 
