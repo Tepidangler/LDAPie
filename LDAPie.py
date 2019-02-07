@@ -90,14 +90,11 @@ for arg in sys.argv:
 
 m = LDAPie(wordlist,url)
 if post == True:
-#    print('here')
     p = m.post(wordlist,url)
-#    print('here')
     pass
 if get == True:
     g = m.get(wordlist,url)
     pass
-#        print("\033[1;31mPLEASE SPECIFY GET OR POST USING THE G OR P FLAGS""")
 
 elif get == False or post == False:
     print("""\033;1;32m
